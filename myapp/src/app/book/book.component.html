@@ -1,0 +1,223 @@
+<div class="container">
+
+  <div *ngIf="bookAction==='list'">
+    <!--<h1 style="text-align: center; margin-left: " ><strong>Lista de Libros</strong></h1>
+    <table  class="table">
+      <thead>
+      <tr>
+        <th scope="col">ISBN</th>
+        <th scope="col">Title</th>
+        <th scope="col">Author</th>
+        <th scope="col">Language</th>
+        <th scope="col">Editorial</th>
+        <th scope="col">Description</th>
+      </tr>
+     </thead> 
+     <tbody>
+      <tr *ngFor="let item of allBooks" >
+        <td>{{item.isbn}}</td>
+        <td>{{item.title}}</td>
+        <td>{{item.author}}</td>
+        <td>{{item.language}}</td>
+        <td>{{item.editorial}}</td>
+        <td>{{item.description}}</td>
+        <td>
+          <button type="button" class="btn btn-success" (click)="loanBook(item)">Prestar</button>
+          <button type="button" class="btn btn-info" (click)="editBook(item)">Editar</button>
+          <button type="button" class="btn btn-danger" (click)="deleteBook(item._id)">Eliminar</button>
+        </td> 
+      </tr>
+     <tbody> 
+    </table>-->
+
+    <div class="container">
+        <h1 style="text-align: center; margin-left: " ><strong>Buscar Libro</strong></h1>
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group">
+                    <input class="form-control border-secondary py-2" type="search" placeholder="search" [(ngModel)]="search" >
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" (click)="searchBook()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <br> <br> <br>
+            <p *ngIf="message.error" class="alert alert-danger"  style="margin-left: 14px;" >
+            {{ message.text }}
+          </p>
+        </div>
+    </div>
+
+    <div class="container" *ngIf="searchFind" class="container">
+      <table  class="table">
+        <thead>
+        <tr>
+          <th scope="col">ISBN</th>
+          <th scope="col">Title</th>
+          <th scope="col">Author</th>
+          <th scope="col">Language</th>
+          <th scope="col">Editorial</th>
+          <th scope="col">Description</th>
+        </tr>
+       </thead> 
+       <tbody>
+        <tr>
+          <td>{{findBook.isbn}}</td>
+          <td>{{findBook.title}}</td>
+          <td>{{findBook.author}}</td>
+          <td>{{findBook.language}}</td>
+          <td>{{findBook.editorial}}</td>
+          <td>{{findBook.description}}</td>
+          <td>
+            <button type="button" class="btn btn-success" *ngIf="findBook.status==='Activate'" (click)="loanBook(findBook)">Prestar</button>
+            <button type="button" class="btn btn-info" (click)="editBook(findBook)">Editar</button>
+            <button type="button" class="btn btn-danger" (click)="deleteBook(findBook._id)">Eliminar</button>
+          </td> 
+        </tr>
+       <tbody> 
+      </table>
+    </div>
+ 
+    <div class="container">
+    <button type="button" class="btn btn-primary" (click)="createPanel()">Agregar Libro</button>
+    </div>
+
+    <h1 style="text-align: center; margin-left: " ><strong>Lista de Préstamos</strong></h1>
+    <table  class="table">
+      <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Fecha de Préstamo</th>
+        <th scope="col">Días de Préstamo</th>
+        <th scope="col">ISBN</th>
+        <th scope="col">Title</th>
+        <th scope="col">Author</th>
+      </tr>
+     </thead> 
+     <tbody>
+      <tr *ngFor="let item of allLoans" >
+        <td>{{item.name}}</td>
+        <td>{{item.createdAt}}</td>
+        <td>{{item.days}}</td>
+        <td>{{item.book.isbn}}</td>
+        <td>{{item.book.title}}</td>
+        <td>{{item.book.author}}</td>
+      </tr>
+     <tbody> 
+    </table>
+  </div>
+
+  <div *ngIf="bookAction==='loan'">
+      <h1 style="text-align: center"><strong>Información sobre el préstamo</strong></h1>
+
+      <form class="form-horizontal">
+        <p *ngIf="message.error">
+          {{ message.text }}
+        </p>
+        <div class="form-group">
+          <label for="name" class="control-label col-sm-2" required="true">
+            Nombre
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="name"
+              name="name"
+               [(ngModel)]="loan.name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="days" class="control-label col-sm-2" required="true">
+            Días a Prestar
+          </label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="days"
+              name="days" [(ngModel)]="loan.days">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+            <button type="button" class="btn btn-primary" (click)="addLoan(loan)">Hacer Préstamo</button>
+            <button type="button" class="btn btn-default" (click)="backList()">Cancelar</button>
+          </div>
+        </div>
+      </form>
+  </div>
+
+  <div *ngIf="bookAction==='create' || bookAction==='edit'">
+      <h1 *ngIf="bookAction==='create'" style="text-align: center"><strong>Agregar Libro</strong></h1>
+
+      <h1 *ngIf="bookAction==='edit'" style="text-align: center"><strong>Editar Libro</strong></h1>
+
+      <form class="form-horizontal">
+        <p *ngIf="message.error">
+          {{ message.text }}
+        </p>
+        <div class="form-group">
+          <label for="isbn" class="control-label col-sm-2" required="true">
+            ISBN*
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="isbn"
+              name="isbn"
+               [(ngModel)]="book.isbn">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="title" class="control-label col-sm-2" required="true">
+            Título*
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="title"
+              name="title" [(ngModel)]="book.title">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="author" class="control-label col-sm-2">
+            Autor
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="author"
+              name="author" [(ngModel)]="book.author">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="language" class="control-label col-sm-2">
+            Lenguaje
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="language"
+              name="language" [(ngModel)]="book.language">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="editorial" class="control-label col-sm-2">
+            Editorial
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="editorial"
+              name="editorial" [(ngModel)]="book.editorial">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="description" class="control-label col-sm-2">
+            Descripción
+          </label>
+          <div class="col-sm-10">
+            <textarea id="description"
+              name="description" [(ngModel)]="book.description"></textarea>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+            <button *ngIf="bookAction==='create'" type="button" class="btn btn-primary" (click)="addBook(book)">Registrar</button>
+            <button *ngIf="bookAction==='edit'" type="button" class="btn btn-primary" (click)="updateBook(book)">Actualizar</button>
+            <button type="button" class="btn btn-default" (click)="backList()">Cancelar</button>
+          </div>
+        </div>
+      </form>
+  </div>
+
+</div>
